@@ -4,11 +4,8 @@ apply plugin: 'pmd'
 
 def isJava = plugins.hasPlugin('java')
 // Add checkstyle, findbugs, pmd and lint to the check task.
-// Comment it if already set in root project's build.gradle.
-check.dependsOn 'checkstyle', 'findbugs', 'pmd'
-if (!isJava) {
-    check.dependsOn 'lint'
-}
+// Comment it if already set in root project's build.gradle
+//check.dependsOn 'checkstyle', 'findbugs', 'pmd', 'lint'
 
 checkstyle {
     // will fire "java.lang.ClassNotFoundException: com.puppycrawl.tools.checkstyle
@@ -65,7 +62,6 @@ task findbugs(type: FindBugs, dependsOn: "assemble", group: 'verification') {
     classpath = files()
 }
 
-
 pmd {
     toolVersion = '5.5.2'
     ignoreFailures = false
@@ -90,20 +86,41 @@ task pmd(type: Pmd, group: 'verification') {
     }
 }
 
-if (!isJava) {
-    android {
-        lintOptions {
-            abortOnError true
-            xmlReport true
-            htmlReport true
-            lintConfig file("${project.rootDir}/AndroidCodeQualityConfig/quality/lint/lint.xml")
-        }
+// Comment it if config set in root project's build.gradle
+//android {
+//    lintOptions {
+//        abortOnError true
+//        xmlReport true
+//        htmlReport true
+//        lintConfig file("${project.rootDir}/AndroidCodeQualityConfig/quality/lint/lint.xml")
+//    }
+//
+//    testOptions.unitTests.all {
+//        testLogging {
+//            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+//            outputs.upToDateWhen { false }
+//            showStandardStreams = true
+//        }
+//    }
+//}
 
-        testOptions.unitTests.all {
-            testLogging {
-                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-                outputs.upToDateWhen { false }
-                showStandardStreams = true
+// Comment it if config set in each module's build.gradle
+afterEvaluate {
+    if (!isJava) {
+        android {
+            lintOptions {
+                abortOnError true
+                xmlReport true
+                htmlReport true
+                lintConfig file("${project.rootDir}/AndroidCodeQualityConfig/quality/lint/lint.xml")
+            }
+
+            testOptions.unitTests.all {
+                testLogging {
+                    events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+                    outputs.upToDateWhen { false }
+                    showStandardStreams = true
+                }
             }
         }
     }
